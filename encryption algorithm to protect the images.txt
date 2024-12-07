@@ -1,0 +1,33 @@
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+import boto3
+import os
+
+AWS_ACCESS_KEY_ID = 'the_access_key'
+AWS_SECRET_ACCESS_KEY = 'the_secret_access_key'
+BUCKET_NAME = 'the_bucket_name'
+encryption_key = b'ThisIsASecretKey!'
+
+def encrypt_image(input_file):
+    with open(input_file, 'rb') as file:
+        image_data = file.read()
+    iv = os.urandom(16)
+    cipher = AES.new(encryption_key, AES.MODE_CBC, iv)
+    padded_data = pad(image_data, AES.block_size)
+    encrypted_data = cipher.encrypt(padded_data)
+    return encrypted_data, iv
+
+def upload_encrypted_image(encrypted_data, iv, filename):
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+    )
+    s3.put_object(Body=encrypted_data, Bucket=BUCKET_NAME, Key=filename)
+    iv_filename = f'{filename}.iv'
+    s3.put_object(Body=iv, Bucket=BUCKET_NAME, Key=iv_filename)
+
+input_file = "original_image.jpg"
+encrypted_data, iv = encrypt_image(input_file)
+filename = 'encrypted_image.jpg'
+upload_encrypted_image(encrypted_data, iv, filename)

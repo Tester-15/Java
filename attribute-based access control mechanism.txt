@@ -1,0 +1,24 @@
+class AttributeAuthority:
+    def get_attribute(self, user_id, attribute):
+        return {
+            'user1': {'role': 'Manager', 'department': 'Sales'},
+            'user2': {'role': 'Employee', 'department': 'Marketing'}
+        }.get(user_id, {}).get(attribute)
+
+def check_access(user_id, resource, action):
+    policies = [
+        {'role': 'Manager', 'department': 'Sales', 'resource': 'sales data', 'action': 'read'},
+        {'role': 'Admin', 'resource': 'admin_panel', 'action': 'write'}
+    ]
+    user_attributes = AttributeAuthority()
+    user_role = user_attributes.get_attribute(user_id, 'role')
+    user_department = user_attributes.get_attribute(user_id, 'department')
+
+    return any(
+        policy['resource'] == resource and policy['action'] == action and
+        (policy.get('role') == user_role or not policy.get('role')) and
+        (policy.get('department') == user_department or not policy.get('department'))
+        for policy in policies
+    )
+
+print(check_access('user1', 'sales data', 'read'))  # Output: True

@@ -1,0 +1,96 @@
+import org.cloudbus.cloudsim.*;
+import org.cloudbus.cloudsim.core.CloudSim;
+
+import java.util.*;
+
+public class LogForensicsSimulation {
+    public static void main(String[] args) {
+        int numUsers = 1;
+        Calendar calendar = Calendar.getInstance();
+        CloudSim.init(numUsers, calendar, false);
+
+        List<LogEntry> logData = generateLogData();
+        List<LogEntry> suspiciousActivities = detectSuspiciousActivities(logData);
+        List<LogEntry> anomalies = detectAnomalies(logData);
+
+        printSuspiciousActivities(suspiciousActivities);
+        printAnomalies(anomalies);
+    }
+
+    private static List<LogEntry> generateLogData() {
+        List<LogEntry> logData = new ArrayList<>();
+        logData.add(new LogEntry("2024-01-01 12:00:00", "192.168.0.1", "10.0.0.1", "Login successful"));
+        logData.add(new LogEntry("2024-01-01 12:05:00", "192.168.0.2", "10.0.0.1", "Failed login attempt"));
+        logData.add(new LogEntry("2024-01-01 12:10:00", "192.168.0.3", "10.0.0.2", "File access denied"));
+        return logData;
+    }
+
+    private static List<LogEntry> detectSuspiciousActivities(List<LogEntry> logData) {
+        List<LogEntry> suspiciousActivities = new ArrayList<>();
+        for (LogEntry log : logData) {
+            if (log.getMessage().contains("Failed login attempt")) {
+                suspiciousActivities.add(log);
+            }
+        }
+        return suspiciousActivities;
+    }
+
+    private static List<LogEntry> detectAnomalies(List<LogEntry> logData) {
+        List<LogEntry> anomalies = new ArrayList<>();
+        for (LogEntry log : logData) {
+            if (log.getMessage().contains("denied")) {
+                anomalies.add(log);
+            }
+        }
+        return anomalies;
+    }
+
+    private static void printSuspiciousActivities(List<LogEntry> suspiciousActivities) {
+        System.out.println("Suspicious Activities:");
+        for (LogEntry log : suspiciousActivities) {
+            System.out.println(log);
+        }
+    }
+
+    private static void printAnomalies(List<LogEntry> anomalies) {
+        System.out.println("Anomalies:");
+        for (LogEntry log : anomalies) {
+            System.out.println(log);
+        }
+    }
+}
+
+class LogEntry {
+    private String timestamp;
+    private String sourceIp;
+    private String destinationIp;
+    private String message;
+
+    public LogEntry(String timestamp, String sourceIp, String destinationIp, String message) {
+        this.timestamp = timestamp;
+        this.sourceIp = sourceIp;
+        this.destinationIp = destinationIp;
+        this.message = message;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public String getSourceIp() {
+        return sourceIp;
+    }
+
+    public String getDestinationIp() {
+        return destinationIp;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public String toString() {
+        return timestamp + " | " + sourceIp + " -> " + destinationIp + " | " + message;
+    }
+}

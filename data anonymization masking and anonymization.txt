@@ -1,0 +1,24 @@
+import pandas as pd
+#Original dataset
+data pd.DataFrame({
+Name': ['John Doe', 'Jane Smith', 'Michael Johnson'],
+‘Email’: [johndoe@example.com', ‘janesmith@example.com','michaeljohnson@example.com'],
+‘Age’:[125, 30, 351]
+})
+#Masking sensitive attributes
+data[Name'] = ‘XXXXXXXXXX’
+data[Email] = ‘xxxxxxxxxx’
+#Output anonymized dataset
+print(data)
+
+import pandas as pd
+#Original dataset
+data = pd.DataFrame({
+‘Name': ['John Doe', 'Jane Smith', 'Michael Johnson'].
+‘Zip Code': ('12345', '67890', '54321'].
+‘Age’: [25, 30, 35]
+#Kanonymization with generalization
+data['Name'] = 'Anonymous'
+data "Zip Code'] = 'XXXXX
+#Output anonymized dataset
+print(data)

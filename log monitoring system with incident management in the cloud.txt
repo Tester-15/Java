@@ -1,0 +1,21 @@
+import boto3
+
+def generate_incident(event, context):
+    log_group = event['detail']['logGroup']
+    log_stream = event['detail']['logStream']
+    log_message = event['detail']['message']
+    
+    incident_title = 'Anomaly Detected in Log Stream: {}'.format(log_stream)
+    incident_description = 'Anomaly detected in log group: {}\nLog message: {}'.format(log_group, log_message)
+    
+    incident_management_service = boto3.client('incident-manager')
+    
+    response = incident_management_service.create_incident(
+        title=incident_title,
+        description=incident_description,
+        impact=1,
+        urgency=1,
+        severity=1,
+    )
+    
+    print("Incident created: ", response)

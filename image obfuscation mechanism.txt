@@ -1,0 +1,29 @@
+pip install google-cloud-vision pillow
+
+
+
+from google.cloud import vision
+from PIL import Image, ImageFilter
+
+def obfuscate_image(image_path):
+    client = vision.ImageAnnotatorClient()
+    with open(image_path, 'rb') as image_file:
+        content = image_file.read()
+    image = vision.Image(content=content)
+    response = client.safe_search_detection(image=image)
+    safe_search = response.safe_search_annotation
+    if safe_search and (safe_search.adult > 3 or safe_search.violence > 3):
+        original_image = Image.open(image_path)
+        blurred_image = original_image.filter(ImageFilter.GaussianBlur(15))
+        output_path = 'obfuscated_image.jpg'
+        blurred_image.save(output_path, 'JPEG')
+        return output_path
+    else:
+        return None
+
+image_path = 'original_image.jpg'
+obfuscated_image_path = obfuscate_image(image_path)
+if obfuscated_image_path:
+    print("Obfuscated image path:", obfuscated_image_path)
+else:
+    print("No obfuscation was necessary.")
